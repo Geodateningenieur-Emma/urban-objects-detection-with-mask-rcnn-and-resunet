@@ -4,16 +4,19 @@ Open global datasets often fall short of meeting the precision requirements for 
 
 <h3 align="left"> Installation</h3>
 <ul>
-  <li > Mask R-CNN:</li>
-  </ul>
-  You simply need to download or clone the Mask R-CNN TensorFlow 2 repository, as explained 
+  <li > Mask R-CNN: You simply need to download or clone the Mask R-CNN TensorFlow 2 repository, as explained 
 <a href="https://github.com/ahmedfgad/Mask-RCNN-TF2" style="cursor: pointer;">here</a> to your local directory and follow the installation instructions. 
 Depending on the resources available, you may need to install TensorFlow for either GPU or CPU. 
-Detailed instructions can be found <a href="https://www.tensorflow.org/install/pip" style="cursor: pointer;">here</a>.
+Detailed instructions can be found <a href="https://www.tensorflow.org/install/pip" style="cursor: pointer;">here</a>.</li>
+  </ul>
+  
 
 
 <ul>
-  <li > ResUNet:</li>
+  <li > ResUNet:The installation, based on TensorFlow 2, can be found 
+    <a href="https://github.com/edwinpalegre/EE8204-ResUNet" style="cursor: pointer;">here</a>, 
+    and is derived from the implementation of the Deep Residual U-Net for Road Extraction by Zhang et al., 
+    which you can explore <a href="https://arxiv.org/abs/1711.10684" style="cursor: pointer;">here</a>.</li>
   </ul>
 
 <p align="left">
