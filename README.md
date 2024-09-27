@@ -25,3 +25,6 @@ After installation, the pipeline can be executed by downloading data from open-a
 
 To train and perform inference, run the mask_rcnn_train_predict.py and resunet_train_predict.py scripts for training and inference with Mask R-CNN and ResUNet, respectively.    
 
+<h3 align="left"> Citation</h3>
+
+You may cite our paper for reference as follow:  Nyandwi, E., Gerke, M. & Achanccaray, P. Local Evaluation of Large-scale Remote Sensing Machine Learning-generated Building and Road Dataset: The Case of Rwanda. PFG (2024). https://doi.org/10.1007/s41064-024-00297-9
