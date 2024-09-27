@@ -275,6 +275,135 @@ model.train(dataset_train, dataset_val,
 history = model.keras_model.history.history
 model.keras_model.save_weights("add path here/trained.h5")
 
+
+
+# ######### Train with mixup #############################
+        
+
+from data_generator_mixup import DataGenerator
+from binaryToinstance import binary_to_instance_segmentation
+import glob
+import os
+import pandas as pd
+from os.path import join, basename
+from sklearn.model_selection import train_test_split
+import tifffile as tiff
+import cv2
+
+# Define the path to your binary label dataset
+PATH_DATA = join("C:", os.sep, "MaskRCNNTF2", "binary labels")
+
+# Collect paths to image and label files
+images = glob.glob(join(PATH_DATA, 'imagess', '*.PNG'))
+labels = glob.glob(join(PATH_DATA, 'labelss', '*.PNG'))
+
+# Create a DataFrame to manage the data
+df = pd.DataFrame()
+df["image"] = images
+df["labels"] = labels
+
+# Set batch size and image size
+batch_size = 100
+image_size = 512
+
+# # Define the number of epochs
+epochs = 120
+
+# # Set a seed for reproducibility
+# # Loop through epochs
+for EPOCH in range(1, epochs +1):
+    print(f"Epoch {EPOCH}:")
+   
+    # Create DataGenerator instances for train, validation, and test
+    train = DataGenerator(
+        batch_size=batch_size,
+        list_img=df["image"].values,
+        list_label=df["labels"].values,
+        image_size=image_size,
+        shuffle=True,
+        random_state=EPOCH
+    )
+
+    # Define directories for saving images and masks
+
+    save_image_dir = f"...../mixup/images"
+    save_tempo_mask_dir= f"...../mixup/labels/temp"
+    save_mask_dir = f"...../mixup/labels/1"
+    # Create directories if they don't exist
+    os.makedirs(save_image_dir, exist_ok=True)
+    os.makedirs(save_tempo_mask_dir, exist_ok=True)
+    os.makedirs(save_mask_dir, exist_ok=True)
+
+
+    # Initialize an index variable for numbering
+    index = 1
+    
+    # Iterate through the generator and save each batch with sequential numbering
+    for batch_x, batch_y in train:
+        for j in range(len(batch_x)):
+            x_filename = os.path.join(save_image_dir, f'{index}.tif')
+            tiff.imsave(x_filename, np.array(batch_x[j], dtype=np.uint8))
+            y_filename = os.path.join(save_tempo_mask_dir, f'{index}.tif')
+            tiff.imsave(y_filename, np.array(batch_y[j], dtype=np.uint8))
+            index += 1
+    for image_path in glob.glob(f"{save_tempo_mask_dir}/*.tif"):
+        y_filename = os.path.splitext(os.path.basename(image_path))[0]
+        binary_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        instance_segmentation, _ = binary_to_instance_segmentation(binary_image)
+        output_file_path = os.path.join(save_mask_dir, f"{y_filename}.tif")
+        cv2.imwrite(output_file_path, instance_segmentation)
+    # Load datasets
+    dataset_train = RwandaDataset()
+    dataset_train.load_Rwanda(os.path.join(ROOT_DIR, 'mixup'))
+    dataset_train.prepare()
+
+
+    # Must call before using the dataset
+    print("Image Count: {}".format(len(dataset_val.image_ids))) # check if you are able to read image
+    print("Class Count: {}".format(dataset_val.num_classes))
+    for i, info in enumerate(dataset_val.class_info):
+        print("{:3}. {:50}".format(i, info['name']))
+    
+    weights_dir = "C:/MaskRCNNTF2/weights"
+    
+    previous_epoch = EPOCH - 1
+    
+    model = modellib.MaskRCNN(mode="training", 
+                          config=config,
+                          model_dir=os.path.join(ROOT_DIR, 'tempo')
+                          )
+    weights_filename = os.path.join(weights_dir, f"epoch_{previous_epoch}.h5") # the model should retrain from previous epoch
+    model.keras_model.load_weights(weights_filename, by_name=True)
+
+    
+    model.train(dataset_train, dataset_val, 
+            learning_rate=config.LEARNING_RATE, 
+            epochs=1, 
+            layers='all')
+
+    # Save the model weights with the name of the epoch
+    weights_filename = os.path.join(weights_dir, f"epoch_{EPOCH}.h5")
+    model.keras_model.save_weights(weights_filename)
+    
+    #Clear directory of images before moving to give way to next epoch images
+    import os
+    import shutil
+
+    # Specify the directories to clear
+    directories_to_clear = [
+    "...../mixup/labels/temp",
+    "..../mixup/labels/1",
+    "..../mixup/images",
+    ]
+
+    for directory in directories_to_clear:
+        shutil.rmtree(directory)
+        os.makedirs(directory)  # Recreate the directory if needed
+
+history = model.keras_model.history.history
+model.keras_model.save_weights("....specify directory....")
+
+##############################################################################
 # ##############################################################################
 
 # # visualize training 
