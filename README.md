@@ -4,12 +4,17 @@ Open global datasets often fall short of meeting the precision requirements for 
 
 <h3 align="left"> Installation</h3>
 <ul>
-  <li>Mask R-CNN:</li>
+  <li > Mask R-CNN:</li>
   </ul>
-You simply need to download or clone the Mask R-CNN TensorFlow 2 repository, as explained 
+  You simply need to download or clone the Mask R-CNN TensorFlow 2 repository, as explained 
 <a href="https://github.com/ahmedfgad/Mask-RCNN-TF2" style="cursor: pointer;">here</a> to your local directory and follow the installation instructions. 
 Depending on the resources available, you may need to install TensorFlow for either GPU or CPU. 
 Detailed instructions can be found <a href="https://www.tensorflow.org/install/pip" style="cursor: pointer;">here</a>.
+
+
+<ul>
+  <li > ResUNet:</li>
+  </ul>
 
 <p align="left">
 </p>
